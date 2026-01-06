@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="InverumHub.Api/InverumHub.Api.csproj" />
+  <Project Path="InverumHub.Core/InverumHub.Core.csproj" />
+  <Project Path="InverumHub.DataLayer/InverumHub.DataLayer.csproj" />
+</Solution>
