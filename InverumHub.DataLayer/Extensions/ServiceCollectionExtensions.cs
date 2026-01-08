@@ -19,7 +19,6 @@ namespace InverumHub.DataLayer.Extensions
             });
 
             return services;
-
         }
     }
 }
