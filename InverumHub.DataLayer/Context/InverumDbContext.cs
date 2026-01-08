@@ -1,10 +1,11 @@
-﻿using System;
+﻿using InverumHub.Core.Entities;
+using InverumHub.DataLayer.Seeds;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using InverumHub.Core.Entities;
 
 namespace InverumHub.DataLayer.Context
 {
@@ -27,6 +28,12 @@ namespace InverumHub.DataLayer.Context
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(InverumDbContext).Assembly);
+
+            ApplicationSeed.Seed(modelBuilder);
+            RoleSeed.Seed(modelBuilder);
+            PermissionSeed.Seed(modelBuilder);
+            RolePermissionSeed.Seed(modelBuilder);
+
         }
 
     }
