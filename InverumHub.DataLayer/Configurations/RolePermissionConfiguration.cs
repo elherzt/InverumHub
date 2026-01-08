@@ -1,0 +1,31 @@
+﻿using InverumHub.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace InverumHub.DataLayer.Configurations
+{
+    public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermission>
+    {
+        public void Configure(EntityTypeBuilder<RolePermission> builder)
+        {
+            builder.ToTable("role_permissions");
+            builder.HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+            builder.HasOne(rp => rp.Role)
+                   .WithMany(r => r.Permissions)
+                   .HasForeignKey(rp => rp.RoleId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(rp => rp.Permission)
+                   .WithMany(p => p.Roles)
+                   .HasForeignKey(rp => rp.PermissionId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+        }
+    }
+}
