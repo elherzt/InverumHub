@@ -16,7 +16,8 @@ namespace InverumHub.DataLayer.Seeds
             modelBuilder.Entity<Role>().HasData(    
                 new Role { Id = 1, Name = "Administrator", Description = "Full access to all system features and settings." },
                 new Role { Id = 2, Name = "User", Description = "Standard user with limited access to features."},
-                new Role { Id = 3, Name = "Guest", Description = "Read-only access to public information." }
+                new Role { Id = 3, Name = "Guest", Description = "Read-only access to public information." },
+                new Role { Id = 999, Name = "SSOT_ADMIN", Description = "Root Admin" }
             );
         }
     }
