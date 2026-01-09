@@ -1,4 +1,10 @@
+using InverumHub.Core.Common;
+using InverumHub.Core.Mappers;
+using InverumHub.Core.Repositories;
+using InverumHub.Core.Services;
 using InverumHub.DataLayer.Extensions;
+using InverumHub.DataLayer.Repositories;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +18,18 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+// repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
+
+//services
+builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddAutoMapper(typeof(UserMapperProfile));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,6 +39,29 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler(handler =>
+{
+    handler.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+        context.Response.ContentType = "application/json";
+
+        context.Response.StatusCode = exception switch
+        {
+            BusinessException => StatusCodes.Status400BadRequest,
+            NotFoundException => StatusCodes.Status404NotFound,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            error = exception?.Message
+        });
+
+    });
+});
 
 
 
