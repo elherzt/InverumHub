@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
       <PrivateAssets>all</PrivateAssets>
@@ -18,6 +19,10 @@
   <ItemGroup>
     <ProjectReference Include="..\InverumHub.Core\InverumHub.Core.csproj" />
     <ProjectReference Include="..\InverumHub.DataLayer\InverumHub.DataLayer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="keys\ssot-public.key" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

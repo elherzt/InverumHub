@@ -1,3 +1,4 @@
+using InverumHub.Api.Common.JWT;
 using InverumHub.Core.Common;
 using InverumHub.Core.Mappers;
 using InverumHub.Core.Repositories;
@@ -5,8 +6,14 @@ using InverumHub.Core.Services;
 using InverumHub.DataLayer.Extensions;
 using InverumHub.DataLayer.Repositories;
 using Microsoft.AspNetCore.Diagnostics;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+Env.Load();
+
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 
@@ -17,6 +24,12 @@ builder.Services.AddInverumHubDataLayer(builder.Configuration.GetConnectionStrin
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+//JWT Configuration
+builder.Services.Configure<JWTConfig>(builder.Configuration.GetSection("JWTConfig"));
+builder.Services.AddScoped<IJWTGenerator, JWTGenerator>();
+AuthConfig.ConfigureJwt(builder.Services, builder.Configuration);
 
 
 // repositories
@@ -67,6 +80,7 @@ app.UseExceptionHandler(handler =>
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
