@@ -35,6 +35,8 @@ appsettings.Local.json
 ## Secrets
 secrets.json
 *.pfx
+.env
+*.env
 
 ## Logs
 *.log
