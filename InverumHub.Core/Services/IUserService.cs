@@ -15,9 +15,14 @@ namespace InverumHub.Core.Services
     public interface IUserService
     {
         Task<List<UserDTO>> GetAll();
+
         Task<UserDTO> CreateUser(CreateUserDTO model);
 
         Task<UserDTO> GetById(Guid uid);
+
+        Task<UserDTO> AddRoleApplication(Guid userUid, int roleId, int appId);
+        Task RemoveRoleApplication(Guid userUid, int roleId, int appId);
+
         Task<UserDTO> InitializeAdminUser(CreateUserDTO model);
         
 
@@ -94,6 +99,27 @@ namespace InverumHub.Core.Services
             };
         }
 
-       
+        public async Task<UserDTO> AddRoleApplication(Guid userUid, int roleId, int appId)
+        {
+            CustomResponse response = await _userRepository.AddRoleApplication( userUid,  roleId,  appId);
+            if (response.TypeOfResponse == TypeOfResponse.OK)
+            {
+                return await GetById(userUid);
+            }
+            else 
+            {
+                throw new BusinessException(response.Message);
+            }
+           
+        }
+
+        public async Task RemoveRoleApplication(Guid userUid, int roleId, int appId)
+        {
+            CustomResponse response = await _userRepository.DeleteRoleApplication(userUid, roleId, appId);
+            if (response.TypeOfResponse != TypeOfResponse.OK)
+            {
+                throw new BusinessException(response.Message);
+            }
+        }
     }
 }

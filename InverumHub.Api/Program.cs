@@ -34,12 +34,15 @@ AuthConfig.ConfigureJwt(builder.Services, builder.Configuration);
 
 // repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 
 
 //services
 builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddAutoMapper(typeof(UserMapperProfile));
 
 

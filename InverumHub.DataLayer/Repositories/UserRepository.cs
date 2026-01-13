@@ -50,6 +50,30 @@ namespace InverumHub.DataLayer.Repositories
             return response;
         }
 
+        public async Task<CustomResponse> DeleteRoleApplication(Guid user_id, int rol_id, int application_id)
+        {
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Role application deleted successfully");
+            try
+            {
+                var userRoleApplication = await _context.UserApplicationRoles
+                    .FirstOrDefaultAsync(ura => ura.UserUid == user_id && ura.RoleId == rol_id && ura.ApplicationId == application_id);
+                if (userRoleApplication == null)
+                {
+                    response.TypeOfResponse = TypeOfResponse.NotFound;
+                    response.Message = "Role application not found";
+                    return response;
+                }
+                _context.UserApplicationRoles.Remove(userRoleApplication);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
         public async Task<CustomResponse> Create(CreateUserDTO user)
         {
             CustomResponse response = new CustomResponse(TypeOfResponse.OK, "User created successfully");
@@ -81,6 +105,8 @@ namespace InverumHub.DataLayer.Repositories
             }
             return response;
         }
+
+       
 
         public async Task<bool> ExistUserByEmail(string email)
         {

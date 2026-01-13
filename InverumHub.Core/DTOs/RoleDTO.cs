@@ -20,4 +20,10 @@ namespace InverumHub.Core.DTOs
         [Required]
         public string Description { get; set; } = default!;
     }
+
+    public class AssignRoleDTO
+    {
+        [Required]
+        public int RoleId { get; set; }
+    }
 }
