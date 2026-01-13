@@ -1,11 +1,13 @@
 ﻿using InverumHub.Core.DTOs;
 using InverumHub.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InverumHub.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "SSOT_ADMIN")]
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
@@ -19,13 +21,15 @@ namespace InverumHub.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok("to do...");
+            var users = await _userService.GetAll();
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            return Ok("to do...");
+            var user = await _userService.GetById(id);
+            return Ok(user);
         }
 
         [HttpPost]

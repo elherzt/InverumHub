@@ -25,6 +25,31 @@ namespace InverumHub.DataLayer.Repositories
             _passwordHasherService = hasher;
         }
 
+        public async Task<CustomResponse> AddRoleApplication(Guid user_id, int rol_id, int application_id)
+        {
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Role application added successfully");
+            try
+            {
+                var userRoleApplication = new UserApplicationRole
+                {
+                    UserUid = user_id,
+                    RoleId = rol_id,
+                    ApplicationId = application_id
+                };
+
+                _context.UserApplicationRoles.Add(userRoleApplication);
+                await _context.SaveChangesAsync();
+
+                response.Data = userRoleApplication;
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
         public async Task<CustomResponse> Create(CreateUserDTO user)
         {
             CustomResponse response = new CustomResponse(TypeOfResponse.OK, "User created successfully");
@@ -63,14 +88,80 @@ namespace InverumHub.DataLayer.Repositories
             return count_email > 0;
         }
 
-        public Task<CustomResponse> Get()
+        public async Task<CustomResponse> Get()
         {
-            throw new NotImplementedException();
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Users retrieved successfully");
+            try
+            {
+                var user_list = await _context.Users
+                    .Include(u => u.ApplicationRoles)
+                        .ThenInclude(ur => ur.Role)
+                    .Include(u => u.ApplicationRoles)
+                        .ThenInclude(ur => ur.Application)
+                    .Where(u => u.IsActive == true)
+                    .ToListAsync();
+                response.Data = user_list;
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
         }
 
-        public Task<CustomResponse> GetById(Guid uid)
+        public async Task<CustomResponse> GetById(Guid uid)
         {
-            throw new NotImplementedException();
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "User retrieved successfully");
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.ApplicationRoles)
+                        .ThenInclude(ur => ur.Role)
+                    .Include(u => u.ApplicationRoles)
+                        .ThenInclude(ur => ur.Application)
+                    .Where(u => u.Uid == uid && u.IsActive == true)
+                    .FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    response.TypeOfResponse = TypeOfResponse.NotFound;
+                    response.Message = "User not found";
+                }
+                response.Data = user;
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<CustomResponse> GetByRole(int rol_id)
+        {
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Users retrieved successfully");
+            try
+            {
+                
+                var user_list = await _context.Users
+                    .Include(u => u.ApplicationRoles)
+                    .Where(u => u.ApplicationRoles.Any(ur => ur.RoleId == rol_id && u.IsActive == true))
+                    .ToListAsync();
+
+                if (user_list == null || user_list.Count == 0)
+                {
+                    response.TypeOfResponse = TypeOfResponse.NotFound;
+                    response.Message = "No users found for the specified role";
+                }
+
+                response.Data = user_list;
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
         }
 
         public Task<CustomResponse> Update(UpdateUserDTO user)
