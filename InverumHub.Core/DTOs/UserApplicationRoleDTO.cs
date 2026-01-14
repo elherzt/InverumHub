@@ -10,8 +10,6 @@ namespace InverumHub.Core.DTOs
     {
         public int ApplicationId { get; set; }
         public string ApplicationName { get; set; } = default!;
-
-        public int RoleId { get; set; }
-        public string RoleName { get; set; } = default!;
+        public List<RoleDTO> Roles { get; set; } = default!;
     }
 }

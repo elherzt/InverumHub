@@ -292,7 +292,9 @@ namespace InverumHub.DataLayer.Repositories
                 existingUser.IsActive = true;
                 _context.Users.Update(existingUser);
                 await _context.SaveChangesAsync();
-                
+                response.Data = existingUser;
+
+
             }
             catch (Exception ex)
             {

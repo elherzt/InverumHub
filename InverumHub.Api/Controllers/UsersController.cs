@@ -50,11 +50,25 @@ namespace InverumHub.Api.Controllers
             return Ok(user);
         }
 
-        [HttpPut("{id}/ChangePassword")]
+        [HttpPut("{id}/Password")]
         public async Task<IActionResult> ChangePassword(Guid id, ChangePasswordDTO model)
         {
            
             var user = await _userService.ChangePassword(id, model);
+            return Ok(user);
+        }
+
+        [HttpPut("{id}/Disable")]
+        public async Task<IActionResult> Disable(Guid id)
+        {
+            await _userService.Disable(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}/Enable")]
+        public async Task<IActionResult> Enable(Guid id)
+        {
+            var user = await _userService.Enable(id);
             return Ok(user);
         }
 

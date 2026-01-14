@@ -13,15 +13,28 @@ namespace InverumHub.Core.Mappers
     {
         public UserMapperProfile()
         {
-            CreateMap<UserApplicationRole, UserApplicationRoleDTO>()
-                .ForMember(d => d.ApplicationName,
-                    o => o.MapFrom(s => s.Application.Name))
-                .ForMember(d => d.RoleName,
-                    o => o.MapFrom(s => s.Role.Name));
-
             CreateMap<User, UserDTO>()
-                .ForMember(d => d.ApplicationsRoles,
-                    o => o.MapFrom(s => s.ApplicationRoles));
+             .ForMember(
+                 d => d.ApplicationsRoles,
+                 o => o.MapFrom(s =>
+                     s.ApplicationRoles
+                      .GroupBy(ar => ar.Application)
+                      .Select(g => new UserApplicationRoleDTO
+                      {
+                          ApplicationId = g.Key.Id,
+                          ApplicationName = g.Key.Name,
+                          Roles = g
+                              .Select(ar => ar.Role)
+                              .Distinct()
+                              .Select(r => new RoleDTO
+                              {
+                                  Id = r.Id,
+                                  Name = r.Name
+                              })
+                              .ToList()
+                      })
+                 )
+             );
         }
     }
 }
