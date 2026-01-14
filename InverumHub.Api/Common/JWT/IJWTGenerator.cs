@@ -74,6 +74,8 @@ namespace InverumHub.Api.Common.JWT
             return tokenHandler.WriteToken(token);
         }
 
+
+
         
     }
 }

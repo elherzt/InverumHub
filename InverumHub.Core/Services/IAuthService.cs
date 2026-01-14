@@ -38,7 +38,7 @@ namespace InverumHub.Core.Services
 
 
             sessionModel.ApplicationId = application.Id;
-            sessionModel.ApplicationName = application.Name;
+            sessionModel.ApplicationName = application.Alias;
             sessionModel.UserId = user.Uid;
             sessionModel.UserName = user.FullName;
             sessionModel.UserEmail = user.Email;
