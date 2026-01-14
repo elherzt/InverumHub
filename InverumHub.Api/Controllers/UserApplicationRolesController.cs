@@ -1,10 +1,12 @@
 ﻿using InverumHub.Core.DTOs;
 using InverumHub.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InverumHub.Api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/users/{userId}/applications/{appId}/roles")]
     public class UserApplicationRolesController : Controller
     {

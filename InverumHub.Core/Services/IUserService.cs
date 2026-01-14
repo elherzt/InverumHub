@@ -23,10 +23,7 @@ namespace InverumHub.Core.Services
         Task RemoveRoleApplication(Guid userUid, int roleId, int appId);
         Task Disable(Guid userUid);
         Task<UserDTO> Enable(Guid userUid);
-
         Task<UserDTO> InitializeAdminUser(CreateUserDTO model);
-        
-
     }
 
     public class UserService : IUserService

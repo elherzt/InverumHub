@@ -14,16 +14,30 @@ namespace InverumHub.Core.Services
     public interface IAuthService
     {
         Task<GlobalSessionModel> login(LoginDTO model);
+        Task ChangePassword(Guid userUid, ChangeOwnPasswordDTO model);
 
     }
 
     public class AuthService : IAuthService
     {
         private readonly IAuthRepository _authRepository;
-        public AuthService(IAuthRepository authRepository)
+        private readonly IUserRepository _userRepository;
+        public AuthService(IAuthRepository authRepository, IUserRepository userRepository)
         {
             _authRepository = authRepository;
+            _userRepository = userRepository;
         }
+
+        public async Task ChangePassword(Guid userUid, ChangeOwnPasswordDTO model)
+        {
+           
+            var response = await _userRepository.ChangePassword(userUid, model);
+            if (response.TypeOfResponse != TypeOfResponse.OK)
+            {
+                throw new BusinessException(response.Message);
+            }
+        }
+
         public async Task<GlobalSessionModel> login(LoginDTO model)
         {
             var response = await _authRepository.Login(model.Username, model.Password, model.ApplicationName);

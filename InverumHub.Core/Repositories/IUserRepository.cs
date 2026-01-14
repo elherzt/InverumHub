@@ -15,6 +15,7 @@ namespace InverumHub.Core.Repositories
         Task<CustomResponse> Create(CreateUserDTO user);
         Task<CustomResponse> Update(UpdateUserDTO user);
         Task<CustomResponse> ChangePassword(Guid userUid, ChangePasswordDTO user);
+        Task<CustomResponse> ChangePassword(Guid userUid, ChangeOwnPasswordDTO model);
         Task<CustomResponse> GetByRole(int rol_id);
         Task<CustomResponse> AddRoleApplication(Guid user_id, int rol_id, int application_id);
         Task<CustomResponse> DeleteRoleApplication(Guid user_id, int rol_id, int application_id);

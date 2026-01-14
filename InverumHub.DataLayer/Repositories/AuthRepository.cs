@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using InverumHub.Core.DTOs;
 
 namespace InverumHub.DataLayer.Repositories
 {
@@ -21,6 +22,8 @@ namespace InverumHub.DataLayer.Repositories
             _context = context;
             _passwordHasherService = passwordHasherService;
         }
+
+        
 
         public async Task<CustomResponse> Login(string username, string password, string application_name)
         {

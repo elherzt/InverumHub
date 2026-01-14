@@ -1,7 +1,9 @@
-﻿using InverumHub.Api.Common.JWT;
+﻿using InverumHub.Api.Common;
+using InverumHub.Api.Common.JWT;
 using InverumHub.Core.Common;
 using InverumHub.Core.DTOs;
 using InverumHub.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InverumHub.Api.Controllers
@@ -10,7 +12,7 @@ namespace InverumHub.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
-        
+
         private readonly IAuthService _authService;
         private readonly IJWTGenerator _jwtGenerator;
 
@@ -27,6 +29,15 @@ namespace InverumHub.Api.Controllers
             string token = _jwtGenerator.GenerateToken(sessionModel);
             return Ok(new { Token = token });
 
+        }
+
+        [Authorize]
+        [HttpPut("me/ChangePassword")]
+        public async Task<IActionResult> ChangeOwnPassword(ChangeOwnPasswordDTO model)
+        {
+            var sessionModel = User.ToGlobalSession();
+            await _authService.ChangePassword(sessionModel.UserId, model);
+            return NoContent();
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using InverumHub.Api.Common;
 using InverumHub.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace InverumHub.Api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class PermissionsController : Controller
     {

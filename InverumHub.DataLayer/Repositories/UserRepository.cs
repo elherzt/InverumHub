@@ -115,6 +115,12 @@ namespace InverumHub.DataLayer.Repositories
             return count_email > 0;
         }
 
+        public async Task<bool> ExistUserByEmail(string email, Guid userUid)
+        {
+            var count_user = await _context.Users.Where(u => u.Email == email && u.IsActive == true && u.Uid != userUid).CountAsync();
+            return count_user > 0;
+        }
+
         public async Task<CustomResponse> Get(bool isActive)
         {
             CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Users retrieved successfully");
@@ -203,6 +209,14 @@ namespace InverumHub.DataLayer.Repositories
                     return existingUserResponse;
                 }
 
+                if (await ExistUserByEmail(user.Email, user.Uid))
+                {
+                    response.TypeOfResponse = TypeOfResponse.FailedResponse;
+                    response.Message = "Email already registered";
+                    return response;
+                }
+
+
                 User existingUser = (User)existingUserResponse.Data!;
                 existingUser.FullName = user.FullName;
                 existingUser.Email = user.Email;
@@ -242,6 +256,41 @@ namespace InverumHub.DataLayer.Repositories
             }
             return response;
         }
+
+        public async Task<CustomResponse> ChangePassword(Guid userUid, ChangeOwnPasswordDTO model)
+        {
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Password changed successfully");
+            try
+            {
+                var existingUserResponse = await GetById(userUid);
+
+                if (existingUserResponse.TypeOfResponse != TypeOfResponse.OK)
+                {
+                    return existingUserResponse;
+                }
+                User existingUser = (User)existingUserResponse.Data!;
+
+
+                if (!_passwordHasherService.VerifyPassword(existingUser.Password, model.CurrentPassword))
+                {
+                    response.TypeOfResponse = TypeOfResponse.FailedResponse;
+                    response.Message = "Current password is incorrect";
+                    return response;
+                }
+
+                existingUser.Password = _passwordHasherService.HashPassword(model.NewPassword);
+                _context.Users.Update(existingUser);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+
 
         public async Task<CustomResponse> Disable(Guid userUid)
         {
@@ -304,5 +353,7 @@ namespace InverumHub.DataLayer.Repositories
             return response;
 
         }
+
+        
     }
 }
