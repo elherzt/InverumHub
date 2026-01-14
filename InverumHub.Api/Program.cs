@@ -4,10 +4,13 @@ using InverumHub.Core.Common;
 using InverumHub.Core.Mappers;
 using InverumHub.Core.Repositories;
 using InverumHub.Core.Services;
+using InverumHub.DataLayer.Context;
 using InverumHub.DataLayer.Extensions;
 using InverumHub.DataLayer.Repositories;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +79,12 @@ builder.Services.AddAutoMapper(typeof(UserMapperProfile));
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<InverumDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
