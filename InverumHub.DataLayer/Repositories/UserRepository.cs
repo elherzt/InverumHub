@@ -1,5 +1,6 @@
 ﻿using InverumHub.Core.Common;
 using InverumHub.Core.DTOs;
+using InverumHub.Core.Entities;
 using InverumHub.Core.Enums;
 using InverumHub.Core.Repositories;
 using InverumHub.DataLayer.Context;
@@ -7,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using InverumHub.Core.Entities;
 
 namespace InverumHub.DataLayer.Repositories
 {
@@ -114,7 +115,7 @@ namespace InverumHub.DataLayer.Repositories
             return count_email > 0;
         }
 
-        public async Task<CustomResponse> Get()
+        public async Task<CustomResponse> Get(bool isActive)
         {
             CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Users retrieved successfully");
             try
@@ -124,7 +125,7 @@ namespace InverumHub.DataLayer.Repositories
                         .ThenInclude(ur => ur.Role)
                     .Include(u => u.ApplicationRoles)
                         .ThenInclude(ur => ur.Application)
-                    .Where(u => u.IsActive == true)
+                    .Where(u => u.IsActive == isActive)
                     .ToListAsync();
                 response.Data = user_list;
             }
@@ -190,9 +191,116 @@ namespace InverumHub.DataLayer.Repositories
             return response;
         }
 
-        public Task<CustomResponse> Update(UpdateUserDTO user)
+        public async Task<CustomResponse> Update(UpdateUserDTO user)
         {
-            throw new NotImplementedException();
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "User updated successfully");
+            try
+            {
+                var existingUserResponse = await GetById(user.Uid);
+
+                if (existingUserResponse.TypeOfResponse != TypeOfResponse.OK)
+                {
+                    return existingUserResponse;
+                }
+
+                User existingUser = (User)existingUserResponse.Data!;
+                existingUser.FullName = user.FullName;
+                existingUser.Email = user.Email;
+                _context.Users.Update(existingUser);
+                await _context.SaveChangesAsync();
+                response.Data = existingUser;
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<CustomResponse> ChangePassword(Guid userUid, ChangePasswordDTO user)
+        {
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "Password changed successfully");
+            try
+            {
+                var existingUserResponse = await GetById(userUid);
+
+                if (existingUserResponse.TypeOfResponse != TypeOfResponse.OK)
+                {
+                    return existingUserResponse;
+                }
+                User existingUser = (User)existingUserResponse.Data!;
+                existingUser.Password = _passwordHasherService.HashPassword(user.NewPassword);
+                _context.Users.Update(existingUser);
+                await _context.SaveChangesAsync();
+                response.Data = existingUser;
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<CustomResponse> Disable(Guid userUid)
+        {
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "User disabled successfully");
+            try
+            {
+
+                var existingUserResponse = await GetById(userUid);
+
+                if (existingUserResponse.TypeOfResponse != TypeOfResponse.OK)
+                {
+                    return existingUserResponse;
+                }
+
+                User existingUser = (User)existingUserResponse.Data!;
+
+                existingUser.IsActive = false;
+                _context.Users.Update(existingUser);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+
+        }
+
+        public async Task<CustomResponse> Enable(Guid userUid)
+        {
+            CustomResponse response = new CustomResponse(TypeOfResponse.OK, "User enabled successfully");
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(u => u.ApplicationRoles)
+                        .ThenInclude(ur => ur.Role)
+                    .Include(u => u.ApplicationRoles)
+                        .ThenInclude(ur => ur.Application)
+                    .Where(u => u.Uid == userUid && u.IsActive == false)
+                    .FirstOrDefaultAsync();
+                if (existingUser == null)
+                {
+                    response.TypeOfResponse = TypeOfResponse.NotFound;
+                    response.Message = "User not found";
+                    return response;
+                }
+                existingUser.IsActive = true;
+                _context.Users.Update(existingUser);
+                await _context.SaveChangesAsync();
+                
+            }
+            catch (Exception ex)
+            {
+                response.TypeOfResponse = TypeOfResponse.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+
         }
     }
 }

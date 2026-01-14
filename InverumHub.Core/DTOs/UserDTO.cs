@@ -27,7 +27,20 @@ namespace InverumHub.Core.DTOs
         public string Email { get; set; } = default!;
         [Required]
         public bool IsActive { get; set; }
-        public string Password { get; set; } = default!;
+    }
+
+    public class ChangePasswordDTO
+    {
+        [Required]
+        public string NewPassword { get; set; } = default!;
+    }
+
+    public class ChangeOwnPasswordDTO
+    {
+        [Required]
+        public string CurrentPassword { get; set; } = default!;
+        [Required]
+        public string NewPassword { get; set; } = default!;
     }
 
     public class UserDTO
