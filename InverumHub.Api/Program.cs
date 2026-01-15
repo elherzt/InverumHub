@@ -77,7 +77,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPermissionsService, PermissionsService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 
-builder.Services.AddAutoMapper(typeof(UserMapperProfile));
+builder.Services.AddAutoMapper(typeof(Program));
 
 
 var app = builder.Build();

@@ -14,6 +14,11 @@ namespace InverumHub.Core.Mappers
         public PermisionMapperProfile()
         {
             CreateMap<Permission, PermissionDTO>();
+            CreateMap<Permission, PermissionSysDTO>();
+
+            CreateMap<CreatePermissionDTO, Permission>();
+            CreateMap<UpdatePermissionDTO, Permission>();
+
         }
     }
 }
