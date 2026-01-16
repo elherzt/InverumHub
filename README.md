@@ -27,6 +27,7 @@ The project is intentionally lightweight, easy to run, and easy to adapt. It can
 - **JWT (RSA + public/private keys)**
 - **AutoMapper**
 - **Swagger**
+- **Repository Pattern**
 
 ---
 
@@ -75,7 +76,7 @@ This separation allows each layer to evolve independently.
 
 ### Prerequisites
 
-- .NET 8 SDK
+- .NET 9 SDK
 
 No external services or databases are required.
 
@@ -104,6 +105,8 @@ dotnet run
 ```bash
 https://localhost:{port}/swagger
 ```
+
+6. Use the bootstrap endpoint to configure the initial admin user (one-time setup).
 ---
 
 ### Configuration
@@ -143,11 +146,16 @@ JWTConfig__SecretKeyBase64=MIICXQIBAAKBgQ...
 
 ---
 
-### Current Status
 
-This project is work in progress.
+## Roadmap
 
-Core authentication and authorization flows are implemented, while some features and refinements are still under development.
+This project is intentionally minimal. Future improvements may include:
 
-The repository is actively evolving and intended to be extended according to specific project needs.
+- Automated test coverage for core domain logic
+- Refresh token support
+- External identity providers (OAuth / OpenID Connect)
+- Audit log for security events
+- Rate limiting and abuse protection
+- Multi-tenant support
+
 
